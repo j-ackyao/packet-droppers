@@ -1,0 +1,149 @@
+.vote-icon{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 699px;
+    height: 1242px;
+    object-fit: cover;
+}
+.be-a-part {
+    margin: 0;
+}
+.be-a-part-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.be-a-part-of-decision-wrapper {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 451px;
+    height: 152px;
+}
+.vote-today {
+    position: relative;
+}
+.vote-today-wrapper {
+    position: absolute;
+    top: 63px;
+    left: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px;
+    font-size: 99px;
+    color: #015fc7;
+}
+.quotes {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 502px;
+    height: 219px;
+}
+.buttons-child {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 14px;
+    background-color: #0160c8;
+    width: 234px;
+    height: 59px;
+    cursor: pointer;
+}
+.buttons-item {
+    position: absolute;
+    top: 0px;
+    left: 270px;
+    border-radius: 14px;
+    background-color: #004ea4;
+    width: 234px;
+    height: 59px;
+    cursor: pointer;
+}
+.read-more {
+    position: absolute;
+    top: 14px;
+    left: 315px;
+}
+.register {
+    position: absolute;
+    top: 14px;
+    left: 59px;
+    color: #ebeced;
+}
+.buttons {
+    position: absolute;
+    top: 257px;
+    left: 17px;
+    width: 504px;
+    height: 59px;
+    font-size: 25px;
+    font-family: Outfit;
+}
+.head {
+    position: absolute;
+    top: 462px;
+    left: 793px;
+    width: 521px;
+    height: 316px;
+    font-size: 48px;
+}
+.about {
+    position: absolute;
+    top: 232px;
+    left: 936px;
+    cursor: pointer;
+}
+.contact {
+    position: absolute;
+    top: 232px;
+    left: 1056px;
+    cursor: pointer;
+}
+.topmain {
+    position: absolute;
+    top: -157px;
+    left: -41px;
+    width: 1314px;
+    height: 1242px;
+}
+.loginbutton-child {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 6px;
+    background-color: #015fc7;
+    width: 119px;
+    height: 34px;
+}
+.login {
+    position: absolute;
+    top: 0px;
+    left: 29px;
+}
+.loginbutton {
+    position: absolute;
+    top: 75px;
+    left: 1154px;
+    width: 119px;
+    height: 34px;
+    cursor: pointer;
+}
+.header {
+    width: 100%;
+    position: relative;
+    background-color: #000;
+    height: 1024px;
+    overflow: hidden;
+    text-align: left;
+    font-size: 25px;
+    color: #fff;
+    font-family: 'DM Serif Display';
+}
+
+body{
+    margin: 0px;
+}
