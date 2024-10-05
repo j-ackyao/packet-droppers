@@ -1,0 +1,121 @@
+.registration-form1 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    font-size: 48px;
+    font-weight: 600;
+    color: #55c173;
+}
+.registration-form-child {
+    position: absolute;
+    top: 127px;
+    left: 0px;
+    background-color: #fff;
+    width: 361px;
+    height: 43px;
+}
+.registration-form-item {
+    position: absolute;
+    top: 207px;
+    left: 0px;
+    background-color: #fff;
+    width: 361px;
+    height: 43px;
+}
+.registration-form-inner {
+    position: absolute;
+    top: 367px;
+    left: 0px;
+    background-color: #fff;
+    width: 361px;
+    height: 43px;
+}
+.rectangle-div {
+    position: absolute;
+    top: 447px;
+    left: 0px;
+    background-color: #fff;
+    width: 361px;
+    height: 43px;
+}
+.registration-form-child1 {
+    position: absolute;
+    top: 527px;
+    left: 0px;
+    background-color: #fff;
+    width: 361px;
+    height: 43px;
+}
+.registration-form-child2 {
+    position: absolute;
+    top: 613px;
+    left: 11px;
+    border-radius: 100px;
+    background-color: #55c173;
+    width: 340px;
+    height: 50px;
+}
+.span {
+    color: #ff0000;
+}
+.name {
+    position: absolute;
+    top: 101px;
+    left: 1px;
+}
+.date-of-birth {
+    position: absolute;
+    top: 181px;
+    left: 0px;
+}
+.address {
+    position: absolute;
+    top: 341px;
+    left: 0px;
+}
+.mobile-no-container {
+    position: absolute;
+    top: 421px;
+    left: 0px;
+}
+.confirm-mobile-no-container {
+    position: absolute;
+    top: 501px;
+    left: 0px;
+}
+.submit {
+    position: absolute;
+    top: 626px;
+    left: 141px;
+    color: #fff;
+}
+.registration-form {
+    position: absolute;
+    top: 165px;
+    left: 218px;
+    width: 403px;
+    height: 663px;
+}
+.image-photoroom-1-icon {
+    position: absolute;
+    top: 171px;
+    left: 783px;
+    width: 545px;
+    height: 585px;
+    object-fit: cover;
+}
+.registration-page {
+    width: 100%;
+    position: relative;
+    background-color: #e5f0d4;
+    height: 1024px;
+    overflow: hidden;
+    text-align: left;
+    font-size: 20px;
+    color: #2d2d2d;
+    font-family: Inter;
+}
+
+body{
+    margin:0px;
+}
