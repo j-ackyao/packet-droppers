@@ -8,7 +8,7 @@ class Server {
         this.port = port;
         this.app = express();
         this.initMiddlewares();
-
+        
         initEndpoints(this.app);
     }
 

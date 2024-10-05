@@ -9,7 +9,7 @@ function initEndpoints(express) {
     express.post("/post/", postFunc);
     express.delete("/delete/", deleteFunc);
     // frontend app makes request to our /getLocationStatus endpoint, and we request from given API
-
+   
     // not the best practice to use routing for GET params, but will do :thumbs_up:
     express.get("/getLocationStatus/:lat/:lon", (req, res) => {
         let lat = req.params.lat;
@@ -17,7 +17,7 @@ function initEndpoints(express) {
         if (!lat || !lon) {
             res.status(400).send("bad request, missing lat and/or lon")
             return;
-        }
+        }   
 
         fetch('https://pplx.azurewebsites.net/api/rapid/v0/location-verification/verify', {
             method: "POST",
@@ -50,7 +50,9 @@ function initEndpoints(express) {
                     } else {
                         res.status(200).send(`nope, this number is NOT at ${lat}, ${lon}`);
                     }
+                    return json;
                 });
+                
             } else {
                 console.log(ApiRes);
                 res.sendStatus(400).send("bad request response, something went wrong");
