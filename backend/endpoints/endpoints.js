@@ -29,7 +29,7 @@ function initEndpoints(express) {
                     "area": {
                         "type": "Circle", 
                         "location": { "latitude": lat, "longitude": lon }, 
-                        "accuracy": 1
+                        "accuracy": 1,
                     }
                 }
             ),
@@ -44,16 +44,19 @@ function initEndpoints(express) {
             if (ApiRes.ok) {
                 ApiRes.json().then((json) => {
                     // this is what the API response body is like
+                    console.log("API OK");
                     console.log(json);
-                    if (json.verificationResult) {
+                    if (json.verificationResult == null) {
+                        console.log("malformed request body");
+                        res.sendStatus(400);
+                    } else if (json.verificationResult) {
                         res.status(200).send(`yes, this number is at ${lat}, ${lon}`);
-                    } else {
+                    } else if (!json.verificationResult) {
                         res.status(200).send(`nope, this number is NOT at ${lat}, ${lon}`);
                     }
-                    return json;
                 });
-                
             } else {
+                console.log("API !OK");
                 console.log(ApiRes);
                 res.sendStatus(400).send("bad request response, something went wrong");
             }
