@@ -6,11 +6,6 @@ function initEndpoints(express) {
     express.get('/', (req, res) => {
         res.send('hello');
     });
-
-    // Example requests
-    express.get("/get/", getFunc);
-    express.post("/post/", postFunc);
-    express.delete("/delete/", deleteFunc);
     // Frontend app makes request to our /getLocationStatus endpoint, and we request from given API
 
     // Register with phone number and ID, with number verification only
@@ -105,12 +100,23 @@ async function registering(req, res) {
             },
         });
 
-        console.log('Number Verification Status:', verifyRes.status);
+        //console.log('Number Verification Status:', verifyRes.status);
         const verifyData = await verifyRes.json();
-        console.log('Number Verification Response:', verifyData);
+        //console.log('Number Verification Response:', verifyData);
 
         if (verifyRes.status !== 200 || verifyData.message !== 'poc request successful') {
             return res.status(400).send('Phone number verification unsuccessful');
+        }
+
+        try {
+            data = readDatabase();
+            if (!data["registered_numbers"].includes(phoneNumber)) {
+                data["registered_numbers"].push(phoneNumber);
+                writeDatabase(data);
+            }
+        } catch (error) {
+            console.log("error writing to database: ", error);
+            res.status(500).send("Registration failure");
         }
 
         // Registration successful
@@ -120,19 +126,6 @@ async function registering(req, res) {
         console.error('Error during registration:', error);
         res.status(500).send('Internal server error');
     }
-}
-
-function getFunc(req, res) {
-    res.status(200).send("received get request");
-}
-
-function postFunc(req, res) {
-    res.status(200).send(req.body);
-}
-
-function deleteFunc(req, res) {
-    // For whatever reason you need to delete something
-    res.sendStatus(200);
 }
 
 async function startvote(req, res) {
