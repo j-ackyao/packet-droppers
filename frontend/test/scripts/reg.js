@@ -1,6 +1,6 @@
-var rectangle8 = document.getElementById("rectangle8");
-if(rectangle8) {
-rectangle8.addEventListener("click", function (e) {
+var submit = document.getElementById("submit");
+if(submit) {
+submit.addEventListener("click", function (e) {
 // Add your code here
 });
 }
