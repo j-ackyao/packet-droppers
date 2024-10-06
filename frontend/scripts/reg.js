@@ -23,7 +23,7 @@ document.querySelector(".submit").addEventListener("click", async function (e) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer YOUR_AUTH_TOKEN', // Replace with your actual token if necessary
+                'Authorization': 'Bearer 166b4a', // Replace with your actual token if necessary
             },
             body: JSON.stringify({
                 phoneNumber: phoneNumber,
@@ -40,6 +40,7 @@ document.querySelector(".submit").addEventListener("click", async function (e) {
 
         if (response.ok) {
             alert('Registration successful!');
+            window.location.href = 'personal.html';
         } else {
             const errorText = await response.text();
             alert(`Registration failed: ${errorText}`);
