@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const initEndpoints = require('./endpoints/endpoints.js');
-
+const path = require('path');
 
 
 class Server {
@@ -15,6 +15,7 @@ class Server {
 
     initMiddlewares() {
         this.app.use(express.json());
+        this.app.use('/assets', express.static(path.join(__dirname, '../frontend/test')));
         this.app.use(express.raw({ type: "application/*", limit: "10mb" }));
         this.app.use(cors());
     }

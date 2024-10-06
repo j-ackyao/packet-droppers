@@ -4,7 +4,7 @@ const path = require('path');
 function initEndpoints(express) {
     // Temp test
     express.get('/', (req, res) => {
-        res.send('hello');
+        res.sendFile(path.join(__dirname, '../../frontend/test/home.html'));
     });
     // Frontend app makes request to our /getLocationStatus endpoint, and we request from given API
 
