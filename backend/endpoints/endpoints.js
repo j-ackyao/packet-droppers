@@ -1,45 +1,44 @@
 const fs = require('fs');
 const path = require('path');
 
-
 function initEndpoints(express) {
-    // temp test
+    // Temp test
     express.get('/', (req, res) => {
         res.send('hello');
     });
 
-    // example requests
+    // Example requests
     express.get("/get/", getFunc);
     express.post("/post/", postFunc);
     express.delete("/delete/", deleteFunc);
-    // frontend app makes request to our /getLocationStatus endpoint, and we request from given API
+    // Frontend app makes request to our /getLocationStatus endpoint, and we request from given API
 
-    //register with phone number and id, to verify the phone, allow the admins to input parameter for sim swapping and location
+    // Register with phone number and ID, with number verification only
     express.post("/register/", registering);
 
-
+    // Admin endpoints
     express.post("/admin/startvote/", startvote);
     express.get("/admin/getvoters/", getvoters);
-   
-    // not the best practice to use routing for GET params, but will do :thumbs_up:
+
+
     express.get("/getLocationStatus/:lat/:lon", (req, res) => {
         let lat = req.params.lat;
         let lon = req.params.lon;
         if (!lat || !lon) {
             res.status(400).send("bad request, missing lat and/or lon")
             return;
-        }   
+        }
 
         fetch('https://pplx.azurewebsites.net/api/rapid/v0/location-verification/verify', {
             method: "POST",
             body: JSON.stringify(
                 {
-                    "device": { 
-                        "phoneNumber": "14372307313" 
+                    "device": {
+                        "phoneNumber": "14372307313"
                     },
                     "area": {
-                        "type": "Circle", 
-                        "location": { "latitude": lat, "longitude": lon }, 
+                        "type": "Circle",
+                        "location": { "latitude": lat, "longitude": lon },
                         "accuracy": 1,
                     }
                 }
@@ -51,28 +50,76 @@ function initEndpoints(express) {
                 "accept": "application/json"
             }
         }).then((ApiRes) => {
-            // callback hell
             if (ApiRes.ok) {
-                ApiRes.json().then((json) => {
-                    // this is what the API response body is like
-                    console.log("API OK");
-                    console.log(json);
-                    if (json.verificationResult == null) {
-                        console.log("malformed request body");
-                        res.sendStatus(400);
-                    } else if (json.verificationResult) {
-                        res.status(200).send(`yes, this number is at ${lat}, ${lon}`);
-                    } else if (!json.verificationResult) {
-                        res.status(200).send(`nope, this number is NOT at ${lat}, ${lon}`);
-                    }
-                });
+                return ApiRes.json();
             } else {
-                console.log("API !OK");
-                console.log(ApiRes);
-                res.sendStatus(400).send("bad request response, something went wrong");
+                console.log("API response was not ok:", ApiRes.status);
+                throw new Error("API response was not ok");
             }
+        }).then((json) => {
+            if (json.verificationResult == null) {
+                console.log("Malformed request body");
+                res.status(400).send("Malformed request body from API");
+            } else if (json.verificationResult) {
+                res.status(200).send(`yes, this number is at ${lat}, ${lon}`);
+            } else if (!json.verificationResult) {
+                res.status(200).send(`nope, this number is NOT at ${lat}, ${lon}`);
+            }
+        }).catch((error) => {
+            console.error("Fetch error:", error.message);
+            res.status(500).send("Internal server error: " + error.message);
         });
-    })
+    });
+}
+
+// Function for registration endpoint with number verification only
+async function registering(req, res) {
+    const { phoneNumber } = req.body;
+
+    const authorizationHeader = req.headers['authorization'];
+    if (!authorizationHeader) {
+        console.error('Missing Authorization header');
+        return res.status(400).send('Authorization header is required');
+    }
+
+    const deviceId = authorizationHeader.split(' ')[1];
+    if (!deviceId) {
+        console.error('Invalid Authorization header format');
+        return res.status(400).send('Bearer token is required in the Authorization header');
+    }
+
+    // Validate input
+    if (!phoneNumber) {
+        console.error('Missing phone number');
+        return res.status(400).send('Phone number and device ID are required for registration');
+    }
+
+    try {
+        // Number Verification
+        const verifyRes = await fetch('https://pplx.azurewebsites.net/api/rapid/v0/number-verification/verify', {
+            method: 'POST',
+            body: JSON.stringify({ phoneNumber }),
+            headers: {
+                'Authorization': `Bearer ${deviceId}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        console.log('Number Verification Status:', verifyRes.status);
+        const verifyData = await verifyRes.json();
+        console.log('Number Verification Response:', verifyData);
+
+        if (verifyRes.status !== 200 || verifyData.message !== 'poc request successful') {
+            return res.status(400).send('Phone number verification unsuccessful');
+        }
+
+        // Registration successful
+        res.status(200).send('Registration successful');
+
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.status(500).send('Internal server error');
+    }
 }
 
 function getFunc(req, res) {
@@ -84,25 +131,9 @@ function postFunc(req, res) {
 }
 
 function deleteFunc(req, res) {
-    // for whatever reason you need to delete something
+    // For whatever reason you need to delete something
     res.sendStatus(200);
 }
-
-function registering(req, res) {
-    let phoneNumber = req.body.phone_num;
-    let deviceId = req.body.id;
-
-    if (!phoneNumber || !id) {
-        return res.status(400).send("Phone number and device ID are required");
-    }
-
-    console.log(`Received registration request with phone number: ${phoneNumber} and ID: ${deviceId}, running checks...`);
-
-
-
-}
-const dbPath = path.join(__dirname, 'database.json');
-
 
 async function startvote(req, res) {
     let {sim_swap_date, lat, lon, accuracy, ballot_message} = req.body;
@@ -164,29 +195,20 @@ async function startvote(req, res) {
 }
 
 function getvoters(req, res) {
-    voters = readDatabase()["registered_numbers"];
+    token = req.params.token;
+    console.log(typeof token);
+    console.log(token);
+    if (!token) {
+        return res.status(300).send("no token found");
+    }
+
+    data = readDatabase();
+    let voters = data[token];
     return res.status(200).send(voters);
 }
 
-function voteradd(req, res) {
-    let {userToken, phoneNumber} = req.body;
 
-    console.log(userToken);
-    console.log(phoneNumber);
-
-    let data = readDatabase();
-    if (data.hasOwnProperty(userToken)) {
-        if (!data[userToken].includes(phoneNumber)) {
-            data[userToken].push(phoneNumber);
-            writeDatabase(data);
-            res.status(200).send(`Phone number '${phoneNumber}' added to user '${userToken}'.`);
-        } else {
-            res.status(400).send(`Phone number '${phoneNumber}' already exists for user '${userToken}'.`);
-        }
-    } else {
-        res.status(404).send('User not found.');
-    }
-}
+const dbPath = path.join(__dirname, 'database.json');
 
 // Function to read data from the JSON file
 function readDatabase() {
@@ -207,6 +229,5 @@ function writeDatabase(data) {
         console.error('Error writing to database:', err);
     }
 }
-
 
 module.exports = initEndpoints;

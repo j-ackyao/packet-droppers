@@ -1,7 +1,5 @@
 .title{
-    top: 0px;
-    left: 0px;
-    font-size: 48px;
+    font-size: 2.5em;
     font-weight: 600;
     color: #55c173;
 }
@@ -10,37 +8,7 @@
     color: red;
 }
 
-.registration-form-child1 {
-    background-color: #fff;
-    width: 361px;
-    height: 43px;
-}
-/* .registration-form-child2 {
-    border-radius: 100px;
-    background-color: #55c173;
-    width: 340px;
-    height: 50px;
-} */
-.name {
-    top: 101px;
-    left: 1px;
-}
-.date-of-birth {
-    top: 181px;
-    left: 0px;
-}
-.address {
-    top: 341px;
-    left: 0px;
-}
-.mobile-no-container {
-    top: 421px;
-    left: 0px;
-}
-.confirm-mobile-no-container {
-    top: 501px;
-    left: 0px;
-}
+
 .text{
     resize: none;
 }
@@ -59,10 +27,10 @@
 .registration-form {
     margin-left: 15vw;
     margin-top: 15vh;
-    position: absolute;
     width: 35vw;
-    height: 80vh;
-    min-height: 1000px;
+    height: 1000px;
+    min-height: 2.3em;
+    min-width: 700px;
 }
 .image-photoroom-1-icon {
     position: absolute;
