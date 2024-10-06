@@ -107,7 +107,7 @@ async function registering(req, res) {
 // dont you dare leak this
 const accountSid = process.env.accountSid;
 const authToken = process.env.authToken;
-const client = require('twilio')(accountSid, authToken);
+// const client = require('twilio')(accountSid, authToken);
 
 async function startvote(req, res) {
     let {sim_swap_date, lat, lon, accuracy, ballot_message} = req.body;
