@@ -3,6 +3,7 @@ const cors = require('cors');
 const initEndpoints = require('./endpoints/endpoints.js');
 
 
+
 class Server {
     constructor(port) {
         this.port = port;
