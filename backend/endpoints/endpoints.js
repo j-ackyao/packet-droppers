@@ -18,10 +18,9 @@ function initEndpoints(express) {
 
     // Admin endpoints
     express.post("/admin/startvote/", startvote);
-    express.post("/admin/addvoter/", voteradd);
-    express.get("/admin/getvoters/:token", getvoters);
+    express.get("/admin/getvoters/", getvoters);
 
-    // Get location status
+
     express.get("/getLocationStatus/:lat/:lon", (req, res) => {
         let lat = req.params.lat;
         let lon = req.params.lon;
@@ -136,8 +135,63 @@ function deleteFunc(req, res) {
     res.sendStatus(200);
 }
 
-function startvote(req, res) {
-    // Implement voting start functionality here
+async function startvote(req, res) {
+    let {sim_swap_date, lat, lon, accuracy, ballot_message} = req.body;
+    try {
+        let min_swap_date = new Date(sim_swap_date);
+    } catch (error) {
+        console.log("could not parse sim_swap_date");
+        return res.status(300).send("could not process sim swap date");
+    }
+    let phone_nums = readDatabase()["registered_numbers"];
+
+    // go through the list of numbers, 
+    for (let i = 0; i < phone_nums.length; i++) {
+        // check sim swap days
+        try {
+            let phoneNumber = phone_nums[i];
+            const apiRes = await fetch('https://pplx.azurewebsites.net/api/rapid/v0/simswap/check', {
+                method: "POST",
+                body: JSON.stringify({ "phoneNumber": phoneNumber }),
+                headers: {
+                    "Authorization": "Bearer 166b4a",
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-cache",
+                    "accept": "application/json"
+                }
+            });
+
+            // Check if the response is OK (status code 200-299)
+            if (!apiRes.ok) {
+                console.error(`API request failed for ${phoneNumber}:`, apiRes.status, apiRes.statusText);
+                continue; // Skip to the next phone number
+            }
+
+            // Parse the response body as JSON
+            const jsonResponse = await apiRes.json();
+            console.log(`Response for ${phoneNumber}:`, jsonResponse);
+            
+            let simChangeDate = new Date(jsonResponse.latestSimChange);
+
+            if (simChangeDate > min_swap_date) {
+                console.log("");
+                continue;
+            }
+
+            // Check the SIM swap status from the response
+
+
+            // Send SMS message if necessary
+            // TODO: Implement SMS sending logic
+
+        } catch (error) {
+            console.error(`Error fetching data for ${phoneNumber}: `, error);
+            // Handle the error (e.g., log it, retry, etc.)
+        }
+        // check the location
+
+        // send SMS message
+    }
 }
 
 function getvoters(req, res) {
@@ -153,25 +207,8 @@ function getvoters(req, res) {
     return res.status(200).send(voters);
 }
 
-function voteradd(req, res) {
-    let { userToken, phoneNumber } = req.body;
 
-    console.log(userToken);
-    console.log(phoneNumber);
-
-    let data = readDatabase();
-    if (data.hasOwnProperty(userToken)) {
-        if (!data[userToken].includes(phoneNumber)) {
-            data[userToken].push(phoneNumber);
-            writeDatabase(data);
-            res.status(200).send(`Phone number '${phoneNumber}' added to user '${userToken}'.`);
-        } else {
-            res.status(400).send(`Phone number '${phoneNumber}' already exists for user '${userToken}'.`);
-        }
-    } else {
-        res.status(404).send('User not found.');
-    }
-}
+const dbPath = path.join(__dirname, 'database.json');
 
 // Function to read data from the JSON file
 function readDatabase() {
@@ -193,5 +230,4 @@ function writeDatabase(data) {
     }
 }
 
-const dbPath = path.join(__dirname, 'database.json');
 module.exports = initEndpoints;
