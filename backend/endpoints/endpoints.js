@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 function initEndpoints(express) {
     // Temp test
@@ -130,8 +131,8 @@ async function registering(req, res) {
 
 
 // dont you dare leak this
-const accountSid = 'ACb82104e704c7bf0a876e0c6466acc5a8';
-const authToken = '95b2c61e4b97a806d5835b6ee1dd87b7';
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
 const client = require('twilio')(accountSid, authToken);
 
 async function startvote(req, res) {
