@@ -128,10 +128,18 @@ async function registering(req, res) {
     }
 }
 
+
+// dont you dare leak this
+const accountSid = 'ACb82104e704c7bf0a876e0c6466acc5a8';
+const authToken = '95b2c61e4b97a806d5835b6ee1dd87b7';
+const client = require('twilio')(accountSid, authToken);
+
 async function startvote(req, res) {
     let {sim_swap_date, lat, lon, accuracy, ballot_message} = req.body;
+    console.log(req.body);
+    let min_swap_date;
     try {
-        let min_swap_date = new Date(sim_swap_date);
+        min_swap_date = new Date(sim_swap_date);
     } catch (error) {
         console.log("could not parse sim_swap_date");
         return res.status(300).send("could not process sim swap date");
@@ -143,7 +151,7 @@ async function startvote(req, res) {
         // check sim swap days
         try {
             let phoneNumber = phone_nums[i];
-            const apiRes = await fetch('https://pplx.azurewebsites.net/api/rapid/v0/simswap/check', {
+            let apiRes = await fetch('https://pplx.azurewebsites.net/api/rapid/v0/simswap/check', {
                 method: "POST",
                 body: JSON.stringify({ "phoneNumber": phoneNumber }),
                 headers: {
@@ -161,31 +169,71 @@ async function startvote(req, res) {
             }
 
             // Parse the response body as JSON
-            const jsonResponse = await apiRes.json();
+            let jsonResponse = await apiRes.json();
             console.log(`Response for ${phoneNumber}:`, jsonResponse);
             
             let simChangeDate = new Date(jsonResponse.latestSimChange);
 
+            console.log(`sim change date: ${simChangeDate}, min date: ${min_swap_date}`);
+
             if (simChangeDate > min_swap_date) {
-                console.log("");
+                console.log(`${phoneNumber} cannot vote since sim swap is too close`);
                 continue;
             }
 
-            // Check the SIM swap status from the response
+            // now we do location verification
+            let apiRes2 = await fetch('https://pplx.azurewebsites.net/api/rapid/v0/location-verification/verify', {
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        "device": {
+                            "phoneNumber": `${phoneNumber}`
+                        },
+                        "area": {
+                            "type": "Circle",
+                            "location": { "latitude": lat, "longitude": lon },
+                            "accuracy": accuracy,
+                        }
+                    }
+                ),
+                headers: {
+                    "Authorization": "Bearer 166b4a",
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-cache",
+                    "accept": "application/json"
+                }
+            });
 
+            // Check if the response is OK (status code 200-299)
+            if (!apiRes2.ok) {
+                console.error(`API request failed for ${phoneNumber}:`, apiRes.status, apiRes.statusText);
+                continue; // Skip to the next phone number
+            }
+
+            let api2response = await apiRes2.json();
+            console.log(`Response for ${phoneNumber}:`, api2response);
+
+            if (!api2response.verificationResult) {
+                console.log(`${phoneNumber} is not in the specified region`);
+                continue;
+            }
 
             // Send SMS message if necessary
             // TODO: Implement SMS sending logic
-
+            let smsresp = await client.messages.create({
+                    body: `${ballot_message}`,
+                    from: '+19258077060',
+                    to: `+${phoneNumber}`
+                });
+            console.log(smsresp);
         } catch (error) {
-            console.error(`Error fetching data for ${phoneNumber}: `, error);
+            console.error(`Error fetching data for the ${i}th number: `, error);
             // Handle the error (e.g., log it, retry, etc.)
         }
-        // check the location
-
-        // send SMS message
+        return res.status(200).send("voters have been notified");
     }
 }
+
 
 function getvoters(req, res) {
     token = req.params.token;
